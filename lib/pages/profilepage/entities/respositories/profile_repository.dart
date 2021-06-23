@@ -5,12 +5,13 @@ import 'package:sebarin/shared/function/dio_function.dart';
 
 class ProfileRequest {
   static getPostDetails(int page, int userId) async {
-    final url = "/api/events/index.php?page=$page&id=$userId";
+    final url = "/api/events/uploadedby.php?page=$page&id=$userId";
     Response response;
     var dio = initiateDio();
     dio.interceptors.add(InterceptorsWrapper(
       onError: (e, handler) {
         print(e);
+
         sm.Get.snackbar("Error", "${e.message}",
             snackPosition: sm.SnackPosition.BOTTOM,
             backgroundColor: Colors.red.withOpacity(.5),
