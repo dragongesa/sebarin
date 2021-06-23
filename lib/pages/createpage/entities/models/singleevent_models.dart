@@ -18,7 +18,7 @@ class SingleEventModel {
     required this.data,
   });
 
-  final String status;
+  final int status;
   final Event data;
 
   factory SingleEventModel.fromJson(Map<String, dynamic> json) =>

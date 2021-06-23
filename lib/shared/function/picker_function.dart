@@ -4,9 +4,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:sebarin/shared/models/local_events_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Picker {
+  Picker._privateConstructor();
+
+  static final Picker _instance = Picker._privateConstructor();
+
+  factory Picker() {
+    return _instance;
+  }
+
   static getDateAndTime() async {
     DateTime? val;
     await Get.bottomSheet(
@@ -41,12 +51,13 @@ class Picker {
     return val ?? DateTime.now();
   }
 
-  static Future<PlatformFile> getImageFromGallery() async {
+  static Future<PlatformFile?> getImageFromGallery() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpeg', 'jpg', 'png'],
+      type: FileType.image,
+      // allowedExtensions: ['jpeg', 'jpg', 'png'],
     );
-    var file = File(result!.files.single.path!);
+    if (result == null) return null;
+    var file = File(result.files.single.path!);
     PlatformFile image = PlatformFile(
       name: result.files.single.name,
       size: result.files.single.size,
@@ -76,6 +87,36 @@ class Picker {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('loginStatus');
     prefs.remove('userId');
+  }
+
+  static Future<int?> saveEventToLocal(int id) async {
+    LoginDetails loginDetails = await getLoginDetails();
+    var box = await Hive.openBox('local_event');
+    for (LocalEvent event in box.values) {
+      if (event.userId == loginDetails.userId! && event.eventId == id)
+        return await null;
+    }
+    int key = await box.add(LocalEvent(loginDetails.userId!, id));
+    return key;
+  }
+
+  static Future<List<Map<String, dynamic>>> getLocalEvent() async {
+    LoginDetails loginDetails = await Picker.getLoginDetails();
+    var box = await Hive.openBox('local_event');
+    List<Map<String, dynamic>> j = [];
+    for (LocalEvent event in box.values) {
+      if (event.userId == loginDetails.userId)
+        j.add({
+          'key': box.keyAt(box.values.toList().indexOf(event)),
+          'event_id': event.eventId,
+        });
+    }
+    return j;
+  }
+
+  static deleteLocalEventById(int id) async {
+    var box = await Hive.openBox('local_event');
+    return await box.delete(id);
   }
 }
 

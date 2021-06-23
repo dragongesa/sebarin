@@ -8,6 +8,7 @@ import 'package:sebarin/pages/homepage/controller/home_controller.dart';
 import 'package:sebarin/shared/widget/contentitem.dart';
 import 'package:sebarin/shared/widget/drawer.dart';
 import 'package:sebarin/shared/widget/navbar.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends GetView<HomeController> {
   @override
@@ -131,9 +132,34 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                       ),
                       if (controller.isConnecting.value)
-                        Text("Loading...")
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          itemBuilder: (context, index) => Shimmer.fromColors(
+                              baseColor: Colors.grey.shade200,
+                              highlightColor: Colors.grey.shade300,
+                              child: ContentItem()),
+                        )
                       else
-                        Image.network("https://i.redd.it/h8t6xvq7t8s51.png")
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.blue,
+                          ),
+                          width: double.infinity,
+                          margin: EdgeInsets.symmetric(vertical: 15),
+                          padding: EdgeInsets.all(15),
+                          child: Text(
+                            "Kamu sudah mencapai start kami",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: 'pacifico',
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

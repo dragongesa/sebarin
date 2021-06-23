@@ -11,6 +11,7 @@ class CreateSuccessController extends GetxController {
   SingleEventModel? model;
   @override
   void onInit() {
+    print(Get.parameters['id']);
     getUploadedEvent(int.parse(Get.parameters['id']!));
     super.onInit();
   }
@@ -18,8 +19,10 @@ class CreateSuccessController extends GetxController {
   getUploadedEvent(int id) async {
     isConnecting.toggle();
     http.Response response = await CreateRequest.getUploadedEvent(id);
-    if (response.data['status'] == "200")
+    if (response.data['status'] == 200) {
+      print(response.data);
       model = singleEventModelFromJson(jsonEncode(response.data));
+    }
     isConnecting.toggle();
   }
 

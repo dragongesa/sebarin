@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sebarin/constants/themes/dark_theme.dart';
+import 'package:sebarin/pages/attendpage/controller/attend_controller.dart';
 
-class AttendScreen extends GetView {
+class AttendScreen extends GetView<AttendController> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -53,10 +53,7 @@ class AttendScreen extends GetView {
                 child: Row(
                   children: [
                     OutlinedButton(
-                        onPressed: () {
-                          Fluttertoast.cancel();
-                          Fluttertoast.showToast(msg: "Udah gue ingetin");
-                        },
+                        onPressed: () => controller.addToCalendar(),
                         child: Text("Ingetin Sekalian dong".toUpperCase())),
                     SizedBox(
                       width: 15,

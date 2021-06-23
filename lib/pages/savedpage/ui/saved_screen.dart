@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
+import 'package:sebarin/pages/savedpage/controller/saved_controller.dart';
+import 'package:sebarin/shared/models/events.dart';
 import 'package:sebarin/shared/widget/contentitem.dart';
 import 'package:sebarin/shared/widget/navbar.dart';
+import 'package:shimmer/shimmer.dart';
 
-class SavedScreen extends GetView {
+class SavedScreen extends GetView<SavedController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,29 +28,75 @@ class SavedScreen extends GetView {
                 ),
               ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 15),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 5,
-                itemBuilder: (context, index) => Stack(
-                  children: [
-                    ContentItem(),
-                    Positioned(
-                      top: 30,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => print("Pressed trash"),
-                        child: Icon(
-                          Feather.trash_2,
-                          size: 14,
-                          color: Colors.red,
+            Obx(
+              () => Container(
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                child: controller.length.value > 0
+                    ? GetBuilder<SavedController>(
+                        id: 'item',
+                        builder: (controller) => ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: controller.length.value,
+                          itemBuilder: (context, index) {
+                            print(index);
+                            print(controller.saved.length);
+                            if (index <= controller.saved.length) if (controller
+                                .saved[index] is Event)
+                              return Stack(
+                                children: [
+                                  ContentItem(controller.saved[index]),
+                                  Positioned(
+                                    top: 30,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          controller.deleteSavedEventById(
+                                              controller.eventsId[index]),
+                                      child: Icon(
+                                        Feather.trash_2,
+                                        size: 14,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            else if (controller.saved[index] == null)
+                              return Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade200,
+                                  highlightColor: Colors.grey.shade300,
+                                  child: ContentItem());
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: Colors.amber.shade300,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.amber),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Text(
+                                        "Event dengan ID [${controller.saved[index]}] tidak tersedia lagi."),
+                                  ),
+                                  IconButton(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onPressed: () =>
+                                        controller.deleteSavedEventById(
+                                            controller.saved[index]),
+                                    icon: Icon(Feather.x),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                      )
+                    : Text("Kosong"),
               ),
             )
           ],

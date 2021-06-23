@@ -1,14 +1,19 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:sebarin/pages/attendpage/binding/attend_binding.dart';
+import 'package:sebarin/pages/attendpage/binding/present_list_binding.dart';
 import 'package:sebarin/pages/attendpage/ui/attend_screen.dart';
+import 'package:sebarin/pages/attendpage/ui/present_list_screen.dart';
 import 'package:sebarin/pages/createpage/binding/create_binding.dart';
 import 'package:sebarin/pages/createpage/binding/create_success_binding.dart';
 import 'package:sebarin/pages/createpage/ui/create_screen.dart';
 import 'package:sebarin/pages/createpage/ui/create_success_screen.dart';
 import 'package:sebarin/pages/homepage/binding/home_binding.dart';
 import 'package:sebarin/pages/homepage/ui/home_screen.dart';
+import 'package:sebarin/pages/myeventpage/binding/myevent_binding.dart';
 import 'package:sebarin/pages/myeventpage/ui/myevent_screen.dart';
 import 'package:sebarin/pages/profilepage/ui/profile_screen.dart';
 import 'package:sebarin/pages/resultpage/ui/result_screen.dart';
+import 'package:sebarin/pages/savedpage/binding/saved_binding.dart';
 import 'package:sebarin/pages/savedpage/ui/saved_screen.dart';
 import 'package:sebarin/pages/searchpage/binding/search_binding.dart';
 import 'package:sebarin/pages/searchpage/ui/search_screen.dart';
@@ -51,14 +56,17 @@ List<GetPage> routes = [
   GetPage(
     name: '/attend',
     page: () => AttendScreen(),
+    binding: AttendBinding(),
   ),
   GetPage(
     name: '/saved',
     page: () => SavedScreen(),
+    binding: SavedBinding(),
   ),
   GetPage(
     name: '/my-event',
     page: () => MyEventScreen(),
+    binding: MyEventBinding(),
   ),
   GetPage(
     name: '/my-profile',
@@ -79,6 +87,11 @@ List<GetPage> routes = [
     name: '/create/success',
     page: () => CreateSuccessScreen(),
     binding: CreateSuccessBinding(),
+  ),
+  GetPage(
+    name: '/presentlist',
+    page: () => PresentListScreen(),
+    binding: PresentListBinding(),
   ),
   GetPage(
       name: '/create/test', page: () => TestScreen(), binding: TestBinding()),

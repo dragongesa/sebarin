@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
@@ -31,9 +32,12 @@ class SideBar extends GetWidget<ThemeController> {
                                   radius: 32,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(100),
-                                    child: Image.network(
-                                      drawerController.user?.photo ??
+                                    child: CachedNetworkImage(
+                                      imageUrl: drawerController.user?.photo ??
                                           "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Blank_woman_placeholder.svg/1200px-Blank_woman_placeholder.svg.png",
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                   backgroundColor: Colors.grey.shade100,
@@ -76,7 +80,10 @@ class SideBar extends GetWidget<ThemeController> {
                                                         EdgeInsets.zero)),
                                             onPressed: () => Get
                                               ..back()
-                                              ..toNamed('/my-profile'),
+                                              ..toNamed('/my-profile')!
+                                                  .whenComplete(() =>
+                                                      drawerController
+                                                          .getLoginDetails()),
                                             child: Text("Lihat profil")),
                                       )
                                     ],

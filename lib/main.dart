@@ -2,10 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as doc;
+import 'package:sebarin/shared/models/local_events_model.dart';
 import 'package:sebarin/utils/routes.dart';
 import 'package:sebarin/utils/themes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var dir = await doc.getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+  Hive.registerAdapter(LocalEventAdapter());
   runApp(MyApp());
 }
 

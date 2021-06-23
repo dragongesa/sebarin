@@ -11,6 +11,7 @@ import 'package:flutter_quill/widgets/toolbar.dart';
 import 'package:get/get.dart';
 import 'package:sebarin/constants/themes/dark_theme.dart';
 import 'package:sebarin/pages/createpage/controller/create_controller.dart';
+import 'package:sebarin/pages/createpage/entities/models/categories_model.dart';
 import 'package:sebarin/shared/widget/navbar.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:tuple/tuple.dart';
@@ -63,7 +64,7 @@ class CreateScreen extends GetView<CreateController> {
                 Obx(
                   () => IconButton(
                       icon: controller.isConnecting.value
-                          ? CircularProgressIndicator()
+                          ? CupertinoActivityIndicator()
                           : Icon(Feather.check),
                       onPressed: () {
                         FocusScope.of(context).unfocus();
@@ -119,164 +120,195 @@ class ProvideThumbTime extends GetWidget<CreateController> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
+          Padding(
             padding: EdgeInsets.all(15),
-            child: GetBuilder<CreateController>(
-              id: 'poster',
-              builder: (controller) {
-                if (controller.poster?.path != null)
-                  return Stack(
-                    children: [
-                      Image.memory(controller.poster!.bytes!),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Tooltip(
-                          message: "Hapus Poster",
-                          child: Container(
-                            color: Colors.red,
-                            child: IconButton(
-                              icon: Icon(
-                                Feather.x,
-                                color: Colors.white,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    child: GetBuilder<CreateController>(
+                      id: 'poster',
+                      builder: (controller) {
+                        if (controller.poster?.path != null)
+                          return Center(
+                            child: Stack(
+                              children: [
+                                Image.memory(
+                                  controller.poster!.bytes!,
+                                  fit: BoxFit.contain,
+                                  height: 192,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Tooltip(
+                                    message: "Hapus Poster",
+                                    child: Container(
+                                      color: Colors.red,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Feather.x,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () =>
+                                            controller.deletePoster(),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        return GestureDetector(
+                          onTap: () => controller.pickPoster(),
+                          child: DottedBorder(
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(8),
+                            dashPattern: [8, 5],
+                            strokeCap: StrokeCap.round,
+                            color: Colors.grey,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(25),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        AntDesign.picture,
+                                        size: 64,
+                                        color: Colors.grey,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              onPressed: () => controller.deletePoster(),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  );
-                return GestureDetector(
-                  onTap: () => controller.pickPoster(),
-                  child: DottedBorder(
-                    borderType: BorderType.RRect,
-                    radius: Radius.circular(8),
-                    dashPattern: [8, 5],
-                    strokeCap: StrokeCap.round,
-                    color: Colors.grey,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Feather.upload,
-                              size: 64,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Center(
-                                child: Text(
-                              "unggah postermu disini".toUpperCase(),
-                              style: TextStyle(color: Colors.grey),
-                            )),
-                          ],
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                GestureDetector(
+                    onTap: () => controller.getJadwal(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        color:
+                            Get.isDarkMode ? DarkTheme.dpLayer24 : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //       spreadRadius: -10,
+                        //       color: Get.isDarkMode ? Colors.black : Colors.grey,
+                        //       blurRadius: 15,
+                        //       offset: Offset(0, 15))
+                        // ]
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Obx(() => Column(
+                              children: [
+                                Container(
+                                  color: Get.isDarkMode
+                                      ? DarkTheme.dpLayer12
+                                      : Colors.white,
+                                  padding: const EdgeInsets.all(15),
+                                  child: Text(
+                                    "Dilaksanakan pada".toUpperCase(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: 90,
+                                    child: Divider(
+                                      height: 1,
+                                      thickness: 2,
+                                    )),
+                                if (controller.formattedDate.length == 4)
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "${controller.formattedDate[0]}",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${controller.formattedDate[1]}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 64,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${controller.formattedDate[2]} ${controller.formattedDate[3]}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      Text("pukul: " +
+                                          controller.formattedTime.value),
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 30),
+                                    child: Text(
+                                      "Klik Disini",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                              ],
+                            )),
+                      ),
+                    )),
+              ],
             ),
           ),
-          GestureDetector(
-              onTap: () => controller.getJadwal(),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Get.isDarkMode ? DarkTheme.dpLayer24 : Colors.white,
+          Container(
+            margin: EdgeInsets.all(15),
+            child: Obx(
+              () => DropdownSearch<Category>(
+                emptyBuilder: (context, searchEntry) {
+                  return Text(searchEntry.toString());
+                },
+                dropDownButton: controller.isConnecting.value
+                    ? CupertinoActivityIndicator()
+                    : null,
+                dropdownSearchDecoration: InputDecoration(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                          spreadRadius: -10,
-                          color: Get.isDarkMode ? Colors.black : Colors.grey,
-                          blurRadius: 15,
-                          offset: Offset(0, 15))
-                    ]),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Obx(() => Column(
-                        children: [
-                          Container(
-                            color: Get.isDarkMode
-                                ? DarkTheme.dpLayer12
-                                : Colors.red.shade100,
-                            padding: const EdgeInsets.all(15),
-                            child: Text(
-                              "Dilaksanakan pada".toUpperCase(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          if (controller.formattedDate.length == 4)
-                            Column(
-                              children: [
-                                Text(
-                                  "${controller.formattedDate[0]}",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                  "${controller.formattedDate[1]}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 64,
-                                  ),
-                                ),
-                                Text(
-                                  "${controller.formattedDate[2]} ${controller.formattedDate[3]}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                    "pukul: " + controller.formattedTime.value),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                              ],
-                            )
-                          else
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 30),
-                              child: Text(
-                                "Klik Disini",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                        ],
-                      )),
+                    gapPadding: 0,
+                  ),
+                  contentPadding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                 ),
-              )),
-          DropdownSearch(
-            label: "Kategori Event",
-            mode: Mode.BOTTOM_SHEET,
-            showSearchBox: true,
-            items: [
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-              "Ngontol",
-              "Ngentot",
-            ],
+                enabled: !controller.isConnecting.value,
+                label: "Kategori Event",
+                mode: Mode.BOTTOM_SHEET,
+                selectedItem: controller.selectedCategory,
+                showSearchBox: true,
+                onFind: (text) => controller.fetchCategories(),
+                onChanged: (value) {
+                  print(value!.id);
+                  controller.selectedCategory = value;
+                },
+                itemAsString: (item) => item.name,
+              ),
+            ),
           ),
         ],
       ),
